@@ -1,1 +1,3 @@
 # HackDuke-2020-Project
+
+We are trying to build a website that tracks reported symptoms for COVID-19 as manually reported by users and provides information about whether people have been vaccinated or not. Since a vaccine is not out yet, we used sample data of various vaccines from 2019 to display demonstrations of data visualization. Our website is conceptually similar to the SymMon covid symptom monitoring app used by Duke University. 
