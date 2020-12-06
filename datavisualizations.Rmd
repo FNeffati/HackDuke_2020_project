@@ -1,0 +1,95 @@
+---
+title: "DataAnalysis for HackDuke"
+name: "Vincent Huang"
+date: 12/5/20
+output: html_document
+---
+```{r setup-packages}
+library(RODBC)
+library(tidyverse)
+library(infer)
+```
+
+```{r load-datasets}
+dataset <- read_csv("data/2019VAERSData.csv")
+symptoms <- read_csv("data/2019VAERSSYMPTOMS.csv")
+vax <- read_csv("data/2019VAERSVAX.csv")
+#use_git_config(user.name = "VinceMan54321", user.email="vth3@duke.edu")
+```
+
+```{r state-count-bar, fig.width=15, fig.height=8}
+state_count <- dataset %>%
+  drop_na(STATE) %>%
+  group_by(STATE) %>%
+  count() 
+
+state_count <- state_count %>%
+  mutate(STATE = factor(STATE))
+
+ggplot(data = state_count, aes(x = STATE, y = n, fill = STATE)) +
+  geom_bar(stat = 'identity') +
+  labs(x = "State", y = "Number of Vaccinations", fill = "State",
+  title = "Number of Vaccinations by Count in 2019")
+```
+
+```{r count-vs-age}
+dataset <- dataset %>%
+  mutate(age_group = case_when(
+    AGE_YRS <= 10 ~ "0 - 10",
+    AGE_YRS >= 11 & AGE_YRS <= 20 ~ "11 - 20",
+    AGE_YRS >= 21 & AGE_YRS <= 30 ~ "21 - 30",
+    AGE_YRS >= 31 & AGE_YRS <= 40 ~ "31 - 40",
+    AGE_YRS >= 41 & AGE_YRS <= 50 ~ "41 - 50",
+    AGE_YRS >= 51 & AGE_YRS <= 60 ~ "51 - 60",
+    AGE_YRS >= 61 & AGE_YRS <= 70 ~ "61 - 70",
+    AGE_YRS >= 71 & AGE_YRS <= 80 ~ "71 - 80",
+    AGE_YRS >= 81 & AGE_YRS <= 90 ~ "81 - 90",
+    AGE_YRS >= 91 ~ "90+"))
+
+age_count <- dataset %>%
+  drop_na(AGE_YRS) %>%
+  group_by(age_group) %>%
+  count() 
+
+age_count <- age_count %>%
+  mutate(age_group = factor(age_group))
+
+ggplot(data = age_count, aes(x = age_group, y = n, fill = age_group)) +
+  geom_bar(stat = 'identity') +
+  labs(x = "Age Category", y = "Number of Vaccinations", fill = "Age Cat",
+  title = "Number of Vaccinations by Age Group in 2019")
+```
+
+```{r vax-pie, fig.width=20, fig.height=20}
+vax_count <- vax %>%
+  group_by(VAX_TYPE) %>%
+  count()
+nums <- vax_count$n
+
+labels <- vax$VAX_TYPE %>%
+  unique() %>%
+  sort()
+pie(nums, labels, cex = 1.5)
+```
+
+```{r symptom-chart, fig.width=20, fig.height=20}
+sym_count <- symptoms %>%
+  group_by(SYMPTOM1) %>%
+  count()
+
+sym_count <- sym_count %>%
+  mutate(SYMPTOM1 = factor(SYMPTOM1))
+
+#sym_count <- sample(unique(sym_count), 200)
+
+ggplot(data = sym_count, aes(x = SYMPTOM1, y = n)) +
+  geom_bar(stat = 'identity') +
+  labs(x = "Symptom", y = "Count",
+  title = "Number of Vaccinations by Age Group",
+  subtitle = "20% of symptoms from 2019")
+```
+
+
+
+
+
